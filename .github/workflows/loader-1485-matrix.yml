@@ -1,7 +1,7 @@
 name: loader-1485-matrix
 on:
   push:
-    branches: [ci-1485-matrix]
+    branches: [ci-1485-matrix-mutant]
 permissions:
   contents: read
 jobs:

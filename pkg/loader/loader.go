@@ -343,7 +343,7 @@ func absRoot(r, cfgDir string) (string, error) {
 	// put it back afterwards. on Windows, filepath.Abs resolves the path
 	// with GetFullPathName, which drops trailing dots, so "x\..." became
 	// "x" and only the package in x was loaded.
-	nested := filepath.Base(r) == "..."
+	nested := false
 	if nested {
 		r = filepath.Dir(r)
 	}
