@@ -18,6 +18,22 @@ jobs:
           go-version-file: go.mod
       - name: upstream test.sh (lint + go test -race in every module)
         run: TRACE=1 ./test.sh
+  mac-envtest-diag:
+    strategy:
+      fail-fast: false
+      matrix:
+        stop: ["20s", "120s"]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: test.sh with control-plane output attached
+        env:
+          KUBEBUILDER_ATTACH_CONTROL_PLANE_OUTPUT: "true"
+          KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT: ${{ matrix.stop }}
+        run: TRACE=1 ./test.sh
   windows-go-test:
     runs-on: windows-latest
     steps:
