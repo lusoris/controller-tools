@@ -1,0 +1,29 @@
+name: ct-otherfails
+on:
+  push:
+    branches: ["ci-ct-*"]
+permissions:
+  contents: read
+jobs:
+  test-sh:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: upstream test.sh (lint + go test -race in every module)
+        run: TRACE=1 ./test.sh
+  windows-go-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: go test ./... (root module)
+        run: go test -count=1 ./...
