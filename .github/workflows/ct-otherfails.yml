@@ -16,6 +16,13 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+      - name: shorten the macOS runner hostname (kube-apiserver identity lease label, 63 bytes)
+        if: runner.os == 'macOS'
+        run: |
+          hostname | awk '{print "hostname bytes before:", length($0)}'
+          sudo scutil --set HostName ctci
+          sudo hostname ctci
+          hostname | awk '{print "hostname bytes after:", length($0)}'
       - name: upstream test.sh (lint + go test -race in every module)
         run: TRACE=1 ./test.sh
   windows-go-test:
