@@ -21,7 +21,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -107,7 +106,7 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 		Expect(optionsRegistry.Register(markers.Must(markers.MakeDefinition("applyconfiguration", markers.DescribesPackage, Generator{})))).To(Succeed())
 
 		rt, err := genall.FromOptions(optionsRegistry, []string{
-			fmt.Sprintf("applyconfiguration:externalApplyConfigurations=sigs.k8s.io/controller-tools/pkg/applyconfiguration/testdata/cronjob/external.ExternalData@sigs.k8s.io/controller-tools/pkg/applyconfiguration/testdata/cronjob/externalac,headerFile=%s", path.Join(originalCWD, "../../hack/boilerplate/boilerplate.generatego.txt")),
+			fmt.Sprintf("applyconfiguration:externalApplyConfigurations=sigs.k8s.io/controller-tools/pkg/applyconfiguration/testdata/cronjob/external.ExternalData@sigs.k8s.io/controller-tools/pkg/applyconfiguration/testdata/cronjob/externalac,headerFile=%s", filepath.Join(originalCWD, "../../hack/boilerplate/boilerplate.generatego.txt")),
 			"paths=./api/v1",
 		})
 		Expect(err).NotTo(HaveOccurred())
