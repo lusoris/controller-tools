@@ -130,9 +130,13 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 
 		originalFS := os.DirFS(fixturePath)
 
+		// io/fs paths are always slash-separated, also on Windows.
+		originalDir := path.Join("api/v1", applyConfigurationDir)
+		outputDir := path.Join("api/v1", outputPackage)
+
 		filesInOriginal := make(map[string][]byte)
 		originalFileNames := sets.New[string]()
-		Expect(fs.WalkDir(originalFS, filepath.Join("api/v1", applyConfigurationDir),
+		Expect(fs.WalkDir(originalFS, originalDir,
 			func(path string, d fs.DirEntry, err error) error {
 				if err != nil {
 					return err
@@ -148,7 +152,7 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 				}
 
 				// Record the path without the path prefix for comparison later.
-				path = strings.TrimPrefix(path, filepath.Join("api/v1", applyConfigurationDir)+"/")
+				path = strings.TrimPrefix(path, originalDir+"/")
 				originalFileNames.Insert(path)
 				filesInOriginal[path] = data
 				return nil
@@ -157,7 +161,7 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 
 		filesInOutput := make(map[string][]byte)
 		outputFileNames := sets.New[string]()
-		Expect(fs.WalkDir(tmpFS, filepath.Join("api/v1", outputPackage), func(path string, d fs.DirEntry, err error) error {
+		Expect(fs.WalkDir(tmpFS, outputDir, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -172,7 +176,7 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 			}
 
 			// Record the path without the path prefix for comparison later.
-			path = strings.TrimPrefix(path, filepath.Join("api/v1", outputPackage)+"/")
+			path = strings.TrimPrefix(path, outputDir+"/")
 			outputFileNames.Insert(path)
 			filesInOutput[path] = data
 			return nil
@@ -189,7 +193,7 @@ var _ = Describe("ApplyConfiguration generation from API types", func() {
 			content = []byte(strings.Replace(string(content), "package applyconfiguration", fmt.Sprintf("package %s", outputPackageName), 1))
 
 			// Make sure the import paths are correct for the newly generated content.
-			content = []byte(strings.ReplaceAll(string(content), "testdata/cronjob/api/v1/applyconfiguration", filepath.Join("testdata/cronjob/api/v1", outputPackage)))
+			content = []byte(strings.ReplaceAll(string(content), "testdata/cronjob/api/v1/applyconfiguration", path.Join("testdata/cronjob/api/v1", outputPackage)))
 
 			Expect(string(filesInOutput[name])).To(BeComparableTo(string(content)), "Generated files should match the checked in files, diff found in %s", name)
 		}
