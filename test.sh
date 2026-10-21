@@ -39,7 +39,7 @@ else
 fi
 
 k8s_version=v1.36.0
-goarch=amd64
+goarch="$(go env GOARCH)"
 goos="unknown"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
